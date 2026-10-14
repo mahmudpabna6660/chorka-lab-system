@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "CHORKA TEXTILE LTD. Shade Update Report System",
+  "short_name": "CHORKA LAB",
+  "description": "CHORKA TEXTILE LTD. Yarn Dyeing Laboratory Shade Update and Report Management System",
+  "lang": "bn",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0f766e",
+  "background_color": "#f3f8fa",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ]
+}
