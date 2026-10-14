@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | CHORKA TEXTILE LTD.</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-dark: #115e59;
+            --bg: #f3f7f8;
+            --white: #ffffff;
+            --text: #1f2937;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --green: #15803d;
+            --orange: #c2410c;
+            --blue: #1d4ed8;
+            --red: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont,
+                "Noto Sans Bengali", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        button, a {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                var(--primary-dark),
+                var(--primary)
+            );
+            color: white;
+            padding: 22px 18px;
+            border-radius: 0 0 22px 22px;
+            box-shadow: 0 5px 18px #0f766e25;
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .company {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: .3px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            opacity: .9;
+            margin-top: 6px;
+        }
+
+        .logout-btn {
+            border: 1px solid #ffffff75;
+            background: #ffffff18;
+            color: white;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px 15px 40px;
+        }
+
+        .welcome {
+            margin: 5px 0 18px;
+        }
+
+        .welcome h2 {
+            margin: 0 0 6px;
+            font-size: 22px;
+        }
+
+        .welcome p {
+            color: var(--muted);
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .user-card {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            box-shadow: 0 3px 10px #00000005;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: var(--muted);
+            overflow-wrap: anywhere;
+        }
+
+        .role-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 7px 11px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .role-admin {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .role-user {
+            color: #1d4ed8;
+            background: #dbeafe;
+        }
+
+        .role-error {
+            color: #b91c1c;
+            background: #fee2e2;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 800;
+            margin: 25px 0 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 17px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 3px 10px #00000005;
+            min-width: 0;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .stat-value {
+            font-size: 29px;
+            font-weight: 800;
+            margin-top: 9px;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-icon {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .teal { color: var(--primary); }
+        .blue { color: var(--blue); }
+        .orange { color: var(--orange); }
+        .green { color: var(--green); }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .quick-link {
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 17px 12px;
+            transition: .2s;
+            min-width: 0;
+        }
+
+        .quick-link:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .quick-icon {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+        .quick-title {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .quick-desc {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-label {
+            display: inline-block;
+            margin-bottom: 12px;
+            padding: 5px 9px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .panel-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .refresh-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            padding: 9px 12px;
+            font-size: 12px;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 13px 14px;
+            border-bottom: 1px solid #edf1f5;
+            font-size: 12px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .badge-pending {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .badge-running {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .empty {
+            padding: 28px 15px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .status {
+            margin: 12px 0;
+            padding: 12px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 12px;
+            color: var(--muted);
+            display: none;
+            overflow-wrap: anywhere;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 11px;
+            padding: 25px 10px 10px;
+        }
+
+        @media (max-width: 760px) {
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .quick-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .stat-card {
+                padding: 14px;
+            }
+
+            .stat-value {
+                font-size: 25px;
+            }
+
+            .company {
+                font-size: 15px;
+            }
+
+            .header {
+                padding: 19px 14px;
+            }
+
+            .welcome h2 {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logout-btn {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            .company {
+                font-size: 13px;
+            }
+
+            .stat-value {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div>
+            <div class="company">CHORKA TEXTILE LTD.</div>
+            <div class="subtitle">Shade Update Report System</div>
+        </div>
+
+        <button class="logout-btn" id="logoutButton">
+            Logout ↗
+        </button>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- WELCOME AND USER ROLE -->
+
+    <div class="welcome">
+        <h2>Dashboard 👋</h2>
+        <p>আপনার Shade Update Report-এর সারসংক্ষেপ</p>
+
+        <div class="user-card">
+            <div class="user-email" id="userEmail">
+                ব্যবহারকারীর তথ্য লোড হচ্ছে...
+            </div>
+
+            <div class="role-badge" id="userRoleBadge">
+                Role যাচাই হচ্ছে...
+            </div>
+        </div>
+    </div>
+
+    <div id="statusBox" class="status"></div>
+
+    <!-- STATISTICS -->
+
+    <h3 class="section-title">📊 Report Statistics</h3>
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-label">Total Reports</div>
+            <div class="stat-value teal" id="totalReports">—</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-label">Today's Reports</div>
+            <div class="stat-value blue" id="todayReports">—</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-label">Pending Colors</div>
+            <div class="stat-value orange" id="pendingColors">—</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🏭</div>
+            <div class="stat-label">Running Colors</div>
+            <div class="stat-value green" id="runningColors">—</div>
+        </div>
+
+    </div>
+
+    <!-- QUICK ACCESS -->
+
+    <h3 class="section-title">⚡ Quick Access</h3>
+
+    <div class="quick-grid">
+
+        <a href="entry.html" class="quick-link">
+            <div class="quick-icon">➕</div>
+            <div class="quick-title">New Report</div>
+            <div class="quick-desc">নতুন রিপোর্ট তৈরি করুন</div>
+        </a>
+
+        <a href="history.html" class="quick-link">
+            <div class="quick-icon">📚</div>
+            <div class="quick-title">Report History</div>
+            <div class="quick-desc">পুরোনো রিপোর্ট দেখুন</div>
+        </a>
+
+        <a href="history.html" class="quick-link">
+            <div class="quick-icon">🔎</div>
+            <div class="quick-title">Search Reports</div>
+            <div class="quick-desc">রিপোর্ট খুঁজুন</div>
+        </a>
+
+        <a href="entry.html" class="quick-link">
+            <div class="quick-icon">🎨</div>
+            <div class="quick-title">Shade Update</div>
+            <div class="quick-desc">Shade আপডেট করুন</div>
+        </a>
+
+    </div>
+
+    <!-- ADMIN ONLY MENU -->
+
+    <section id="adminSection" class="admin-section">
+
+        <h3 class="section-title">🛡️ Administration</h3>
+
+        <span class="admin-label">ADMIN ACCESS</span>
+
+        <div class="quick-grid">
+
+            <a href="user-management.html" class="quick-link">
+                <div class="quick-icon">👥</div>
+                <div class="quick-title">User Management</div>
+                <div class="quick-desc">
+                    ব্যবহারকারীর অ্যাকাউন্ট ও Role পরিচালনা
+                </div>
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- CUSTOMER / PI SUMMARY -->
+
+    <h3 class="section-title">📌 Customer / PI Summary</h3>
+
+    <div class="panel">
+
+        <div class="panel-header">
+            <h3>Pending & Running Colors</h3>
+
+            <button class="refresh-btn" id="refreshSummary">
+                ↻ Refresh
+            </button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>PI No.</th>
+                        <th>Pending Colors</th>
+                        <th>Running Colors</th>
+                        <th>Reports</th>
+                    </tr>
+                </thead>
+
+                <tbody id="summaryBody">
+                    <tr>
+                        <td colspan="5" class="empty">
+                            Loading data...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- RECENT REPORTS -->
+
+    <h3 class="section-title">🕒 Recent Reports</h3>
+
+    <div class="panel">
+
+        <div class="panel-header">
+            <h3>Latest 5 Reports</h3>
+
+            <button class="refresh-btn" id="refreshRecent">
+                ↻ Refresh
+            </button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>PI No.</th>
+                        <th>Shade</th>
+                        <th>Date</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+
+                <tbody id="recentBody">
+                    <tr>
+                        <td colspan="5" class="empty">
+                            Loading reports...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        CHORKA TEXTILE LTD. · Shade Update Report System
+    </div>
+
+</main>
+
+<script>
+"use strict";
+
+// ==========================================
+// 1. SUPABASE CONFIGURATION
+// ==========================================
+
+const SUPABASE_URL =
+    "https://qvexepszsqrjgjvobuju.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_6VkM2ZGMwx9vpyLPX33llg_GC7elJ7f";
+
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+// ==========================================
+// 2. GLOBAL USER INFORMATION
+// ==========================================
+
+let currentUser = null;
+let currentRole = null;
+let dashboardLoading = false;
+
+
+// ==========================================
+// 3. HELPER FUNCTIONS
+// ==========================================
+
+function getValue(row, fields, fallback = "") {
+    for (const field of fields) {
+        const value = row[field];
+
+        if (
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== ""
+        ) {
+            return value;
+        }
+    }
+
+    return fallback;
+}
+
+function getCustomer(row) {
+    return String(getValue(
+        row,
+        ["customer_name", "customer", "customerName"],
+        "Unknown Customer"
+    ));
+}
+
+function getPI(row) {
+    return String(getValue(
+        row,
+        ["pi_no", "pi", "po_no", "po", "pi_number"],
+        "—"
+    ));
+}
+
+function getShade(row) {
+    return String(getValue(
+        row,
+        ["shade", "shade_name", "color", "colour"],
+        "—"
+    ));
+}
+
+function getSource(row) {
+    return String(getValue(
+        row,
+        ["update_source", "source", "updated_by_other", "updated_by"],
+        "—"
+    ));
+}
+
+function getDate(row) {
+    return getValue(
+        row,
+        ["update_datetime", "created_at"],
+        ""
+    );
+}
+
+function getCount(row, fields) {
+    const value = getValue(row, fields, 0);
+    const number = Number(value);
+
+    return Number.isFinite(number) ? number : 0;
+}
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function(char) {
+        const map = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        };
+
+        return map[char];
+    });
+}
+
+function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return String(value);
+    }
+
+    return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function showStatus(message, isError = false) {
+    const box = document.getElementById("statusBox");
+
+    box.style.display = "block";
+    box.style.color = isError ? "#b91c1c" : "#475569";
+    box.textContent = message;
+}
+
+
+// ==========================================
+// 4. CHECK LOGIN AND ROLE
+// ==========================================
+
+async function checkSession() {
+
+    const { data, error } = await db.auth.getSession();
+
+    if (error) {
+        showStatus(
+            "Session check failed: " + error.message,
+            true
+        );
+
+        return false;
+    }
+
+    if (!data.session || !data.session.user) {
+        window.location.replace("index.html");
+        return false;
+    }
+
+    currentUser = data.session.user;
+
+    document.getElementById("userEmail").textContent =
+        currentUser.email || "ইমেইল পাওয়া যায়নি";
+
+    const badge = document.getElementById("userRoleBadge");
+
+    badge.textContent = "Role যাচাই হচ্ছে...";
+    badge.className = "role-badge";
+
+    // Fetch actual role from Supabase.
+    // Do not trust sessionStorage for authorization.
+
+    const { data: roleData, error: roleError } = await db
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+    if (roleError) {
+
+        currentRole = null;
+
+        badge.textContent = "⚠️ ROLE যাচাই করা যায়নি";
+        badge.className = "role-badge role-error";
+
+        showStatus(
+            "Role যাচাইয়ের সমস্যা: " + roleError.message,
+            true
+        );
+
+        return false;
+    }
+
+    if (
+        !roleData ||
+        !["admin", "user"].includes(roleData.role)
+    ) {
+
+        currentRole = null;
+
+        badge.textContent = "⚠️ ROLE সেট করা নেই";
+        badge.className = "role-badge role-error";
+
+        showStatus(
+            "আপনার অ্যাকাউন্টে বৈধ Role সেট করা নেই। Admin-এর সঙ্গে যোগাযোগ করুন।",
+            true
+        );
+
+        return false;
+    }
+
+    currentRole = roleData.role;
+
+    // Admin or regular-user badge
+
+    if (currentRole === "admin") {
+
+        badge.textContent = "🛡️ ADMINISTRATOR";
+        badge.className = "role-badge role-admin";
+
+        document.getElementById("adminSection").style.display =
+            "block";
+
+    } else {
+
+        badge.textContent = "👤 GENERAL USER";
+        badge.className = "role-badge role-user";
+
+        document.getElementById("adminSection").style.display =
+            "none";
+    }
+
+    return true;
+}
+
+
+// ==========================================
+// 5. LOAD DASHBOARD DATA
+// ==========================================
+
+async function loadDashboard() {
+
+    if (dashboardLoading) return;
+
+    dashboardLoading = true;
+
+    try {
+
+        showStatus("Loading reports...");
+
+        const sessionOK = await checkSession();
+
+        if (!sessionOK) return;
+
+        const { data, error } = await db
+            .from("shade_reports")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) {
+
+            showStatus(
+                "Data loading error: " + error.message,
+                true
+            );
+
+            document.getElementById("summaryBody").innerHTML =
+                '<tr><td colspan="5" class="empty">Data could not be loaded.</td></tr>';
+
+            document.getElementById("recentBody").innerHTML =
+                '<tr><td colspan="5" class="empty">Data could not be loaded.</td></tr>';
+
+            return;
+        }
+
+        const reports = data || [];
+
+        renderStatistics(reports);
+        renderCustomerSummary(reports);
+        renderRecentReports(reports);
+
+        document.getElementById("statusBox").style.display =
+            "none";
+
+    } catch (error) {
+
+        console.error("Dashboard error:", error);
+
+        showStatus(
+            "Dashboard error: " + error.message,
+            true
+        );
+
+    } finally {
+
+        dashboardLoading = false;
+    }
+}
+
+
+// ==========================================
+// 6. STATISTICS
+// ==========================================
+
+function renderStatistics(reports) {
+
+    const today = new Date();
+
+    const todayKey = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0")
+    ].join("-");
+
+    const todayCount = reports.filter(function(row) {
+
+        const value = getDate(row);
+
+        if (!value) return false;
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) return false;
+
+        const dateKey = [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+        ].join("-");
+
+        return dateKey === todayKey;
+
+    }).length;
+
+    const pendingTotal = reports.reduce(function(total, row) {
+
+        return total + getCount(row, [
+            "pending_color_count",
+            "pending_colors"
+        ]);
+
+    }, 0);
+
+    const runningTotal = reports.reduce(function(total, row) {
+
+        return total + getCount(row, [
+            "running_color_count",
+            "running_colors"
+        ]);
+
+    }, 0);
+
+    document.getElementById("totalReports").textContent =
+        reports.length.toLocaleString("en-US");
+
+    document.getElementById("todayReports").textContent =
+        todayCount.toLocaleString("en-US");
+
+    document.getElementById("pendingColors").textContent =
+        pendingTotal.toLocaleString("en-US");
+
+    document.getElementById("runningColors").textContent =
+        runningTotal.toLocaleString("en-US");
+}
+
+
+// ==========================================
+// 7. CUSTOMER / PI SUMMARY
+// ==========================================
+
+function renderCustomerSummary(reports) {
+
+    const tbody = document.getElementById("summaryBody");
+
+    if (!reports.length) {
+
+        tbody.innerHTML =
+            '<tr><td colspan="5" class="empty">কোনো রিপোর্ট পাওয়া যায়নি।</td></tr>';
+
+        return;
+    }
+
+    const groups = {};
+
+    reports.forEach(function(row) {
+
+        const customer = getCustomer(row);
+        const pi = getPI(row);
+        const key = customer + "||" + pi;
+
+        if (!groups[key]) {
+
+            groups[key] = {
+                customer: customer,
+                pi: pi,
+                pending: 0,
+                running: 0,
+                reports: 0
+            };
+        }
+
+        groups[key].pending += getCount(row, [
+            "pending_color_count",
+            "pending_colors"
+        ]);
+
+        groups[key].running += getCount(row, [
+            "running_color_count",
+            "running_colors"
+        ]);
+
+        groups[key].reports += 1;
+    });
+
+    const rows = Object.values(groups);
+
+    rows.sort(function(a, b) {
+
+        return (b.pending + b.running) -
+               (a.pending + a.running);
+
+    });
+
+    tbody.innerHTML = rows.map(function(item) {
+
+        return `
+            <tr>
+                <td>${escapeHTML(item.customer)}</td>
+                <td>${escapeHTML(item.pi)}</td>
+                <td>
+                    <span class="badge badge-pending">
+                        ${item.pending.toLocaleString("en-US")}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge badge-running">
+                        ${item.running.toLocaleString("en-US")}
+                    </span>
+                </td>
+                <td>${item.reports.toLocaleString("en-US")}</td>
+            </tr>
+        `;
+
+    }).join("");
+}
+
+
+// ==========================================
+// 8. RECENT REPORTS
+// ==========================================
+
+function renderRecentReports(reports) {
+
+    const tbody = document.getElementById("recentBody");
+
+    if (!reports.length) {
+
+        tbody.innerHTML =
+            '<tr><td colspan="5" class="empty">কোনো রিপোর্ট পাওয়া যায়নি।</td></tr>';
+
+        return;
+    }
+
+    const latest = reports.slice(0, 5);
+
+    tbody.innerHTML = latest.map(function(row) {
+
+        const customer = getCustomer(row);
+        const pi = getPI(row);
+        const shade = getShade(row);
+        const date = formatDate(getDate(row));
+        const source = getSource(row);
+
+        return `
+            <tr>
+                <td>${escapeHTML(customer)}</td>
+                <td>${escapeHTML(pi)}</td>
+                <td>${escapeHTML(shade)}</td>
+                <td>${escapeHTML(date)}</td>
+                <td>${escapeHTML(source)}</td>
+            </tr>
+        `;
+
+    }).join("");
+}
+
+
+// ==========================================
+// 9. LOGOUT
+// ==========================================
+
+async function logout() {
+
+    const confirmed = confirm("আপনি কি Logout করতে চান?");
+
+    if (!confirmed) return;
+
+    const button = document.getElementById("logoutButton");
+
+    button.disabled = true;
+    button.textContent = "Logging out...";
+
+    const { error } = await db.auth.signOut();
+
+    if (error) {
+
+        alert("Logout failed: " + error.message);
+
+        button.disabled = false;
+        button.textContent = "Logout ↗";
+
+        return;
+    }
+
+    sessionStorage.removeItem("appRole");
+
+    window.location.replace("index.html");
+}
+
+
+// ==========================================
+// 10. BUTTON EVENTS
+// ==========================================
+
+document.getElementById("logoutButton")
+    .addEventListener("click", logout);
+
+document.getElementById("refreshSummary")
+    .addEventListener("click", loadDashboard);
+
+document.getElementById("refreshRecent")
+    .addEventListener("click", loadDashboard);
+
+
+// ==========================================
+// 11. START DASHBOARD
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", function() {
+    loadDashboard();
+});
+
+</script>
+
+</body>
+</html>

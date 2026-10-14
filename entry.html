@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Shade Update Report</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#f1f5f9;
+ font-family:-apple-system,BlinkMacSystemFont,"Noto Sans Bengali",Arial,sans-serif;
+ color:#172033;padding-bottom:35px
+}
+.header{
+ background:#0f766e;color:white;padding:22px 18px;
+ border-radius:0 0 24px 24px
+}
+.header h2{margin:0 0 6px;font-size:22px}
+.header p{margin:0;font-size:13px;opacity:.9}
+.container{max-width:650px;margin:18px auto;padding:0 14px}
+.card{
+ background:white;padding:20px;margin-bottom:16px;
+ border-radius:18px;box-shadow:0 4px 18px #0f172a0b
+}
+.card h3{margin:0 0 18px;color:#0f766e;font-size:17px}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 7px}
+input,select,textarea{
+ width:100%;padding:12px;border:1px solid #dbe3ea;
+ border-radius:10px;font-size:15px;background:white;color:#172033
+}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{
+ outline:2px solid #99f6e4;border-color:#0f766e
+}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.radio-row{display:flex;gap:16px;flex-wrap:wrap}
+.radio-row label{display:flex;align-items:center;gap:7px;font-weight:400}
+.radio-row input{width:auto}
+.small{font-size:12px;color:#64748b;line-height:1.6}
+.hidden{display:none!important}
+.preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.preview img{width:80px;height:80px;object-fit:cover;border-radius:10px}
+button{
+ border:0;border-radius:12px;padding:13px 16px;
+ font-size:15px;font-weight:700;cursor:pointer
+}
+.primary{background:#0f766e;color:white;width:100%}
+.secondary{background:#e2e8f0;color:#334155}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#message{padding:12px;border-radius:10px;display:none;margin-bottom:14px;white-space:pre-wrap}
+.success{display:block!important;background:#dcfce7;color:#166534}
+.error{display:block!important;background:#fee2e2;color:#991b1b}
+button:disabled{opacity:.55;cursor:wait}
+@media(max-width:420px){.row{grid-template-columns:1fr}.card{padding:16px}}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+ <h2>🧵 New Shade Update</h2>
+ <p>Shade Update Report — Lab Management System</p>
+</div>
+
+<div class="container">
+
+ <div class="actions" style="margin-bottom:14px">
+  <button class="secondary" onclick="goDashboard()">← Dashboard</button>
+  <button class="secondary" onclick="logout()">Logout</button>
+ </div>
+
+ <div id="message"></div>
+
+ <form id="reportForm">
+
+  <div class="card">
+   <h3>📋 Report Information</h3>
+
+   <label>Customer Name *</label>
+   <input id="customer" required placeholder="Customer name">
+
+   <div class="row">
+    <div>
+     <label>Update Date & Time *</label>
+     <input type="datetime-local" id="updateTime" required>
+    </div>
+    <div>
+     <label>PI NO *</label>
+     <input id="piNo" required placeholder="Enter PI NO">
+    </div>
+   </div>
+
+   <label>Updated By *</label>
+   <select id="updatedBy" required>
+    <option value="">Select person</option>
+    <option>Mahmud</option>
+    <option>Farhad</option>
+    <option>Amir</option>
+    <option value="Others">Others</option>
+   </select>
+
+   <div id="otherBox" class="hidden">
+    <label>Other Person's Name *</label>
+    <input id="otherName" placeholder="Enter name">
+   </div>
+
+   <label>Update Source *</label>
+   <select id="source" required>
+    <option value="">Select source</option>
+    <option value="Swatch">Swatch</option>
+    <option value="Mail">Mail</option>
+    <option value="WhatsApp">WhatsApp</option>
+   </select>
+
+   <label>Remarks / Notes</label>
+   <textarea id="notes" placeholder="Write details here..."></textarea>
+  </div>
+
+  <div class="card hidden" id="swatchBox">
+   <h3>🎨 Swatch Information</h3>
+
+   <label>Swatch Received Date & Time *</label>
+   <input type="datetime-local" id="receivedTime">
+
+   <label>Pending / Running Colors আছে? *</label>
+   <div class="radio-row">
+    <label><input type="radio" name="hasColors" value="yes"> Yes</label>
+    <label><input type="radio" name="hasColors" value="no"> No</label>
+   </div>
+
+   <div id="colorCountBox" class="hidden">
+    <div class="row">
+     <div>
+      <label>Pending Colors</label>
+      <input type="number" id="pendingCount" min="0" value="0">
+     </div>
+     <div>
+      <label>Running Colors</label>
+      <input type="number" id="runningCount" min="0" value="0">
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <div class="card">
+   <h3>📷 Attach Evidence</h3>
+   <p class="small">
+    নির্বাচিত Source অনুযায়ী ছবি যুক্ত করুন। একাধিক ছবি নির্বাচন করা যাবে।
+    ছবি Private Storage-এ আপলোড হবে।
+   </p>
+
+   <div id="swatchPhotos" class="hidden">
+    <label>Swatch Photos</label>
+    <input type="file" id="swatchFiles" accept="image/*" multiple>
+    <div class="preview" id="swatchPreview"></div>
+   </div>
+
+   <div id="mailPhotos" class="hidden">
+    <label>Mail Evidence Photos</label>
+    <input type="file" id="mailFiles" accept="image/*" multiple>
+    <div class="preview" id="mailPreview"></div>
+   </div>
+
+   <div id="whatsappPhotos" class="hidden">
+    <label>WhatsApp Evidence Photos</label>
+    <input type="file" id="whatsappFiles" accept="image/*" multiple>
+    <div class="preview" id="whatsappPreview"></div>
+   </div>
+  </div>
+
+  <button class="primary" id="saveBtn" type="submit">
+   💾 Save Report
+  </button>
+
+ </form>
+</div>
+
+<script>
+const SUPABASE_URL = "https://qvexepszsqrjgjvobuju.supabase.co";
+const SUPABASE_KEY = "sb_publishable_6VkM2ZGMwx9vpyLPX33llg_GC7elJ7f";
+const BUCKET = "shade-evidence";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+
+function localDateTime(){
+ const d = new Date();
+ d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+ return d.toISOString().slice(0,16);
+}
+
+document.getElementById("updateTime").value = localDateTime();
+
+function showMessage(text, type){
+ const box = document.getElementById("message");
+ box.textContent = text;
+ box.className = type;
+ box.style.display = "block";
+ box.scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+function hideMessage(){
+ const box = document.getElementById("message");
+ box.className = "";
+ box.style.display = "none";
+}
+
+async function checkLogin(){
+ const {data,error} = await db.auth.getSession();
+
+ if(error || !data.session){
+  location.replace("./index.html");
+  return false;
+ }
+
+ currentUser = data.session.user;
+ return true;
+}
+
+function goDashboard(){
+ location.href = "./dashboard.html";
+}
+
+async function logout(){
+ await db.auth.signOut();
+ location.href = "./index.html";
+}
+
+document.getElementById("updatedBy").addEventListener("change", function(){
+ const isOther = this.value === "Others";
+ document.getElementById("otherBox").classList.toggle("hidden", !isOther);
+ document.getElementById("otherName").required = isOther;
+});
+
+document.getElementById("source").addEventListener("change", function(){
+ const source = this.value;
+
+ document.getElementById("swatchBox").classList.toggle("hidden", source !== "Swatch");
+ document.getElementById("swatchPhotos").classList.toggle("hidden", source !== "Swatch");
+ document.getElementById("mailPhotos").classList.toggle("hidden", source !== "Mail");
+ document.getElementById("whatsappPhotos").classList.toggle("hidden", source !== "WhatsApp");
+
+ document.getElementById("receivedTime").required = source === "Swatch";
+
+ if(source !== "Swatch"){
+  document.getElementById("receivedTime").value = "";
+  document.querySelectorAll('input[name="hasColors"]').forEach(r => r.checked = false);
+  document.getElementById("colorCountBox").classList.add("hidden");
+ }
+});
+
+document.querySelectorAll('input[name="hasColors"]').forEach(r=>{
+ r.addEventListener("change",()=>{
+  const yes = document.querySelector('input[name="hasColors"]:checked')?.value === "yes";
+  document.getElementById("colorCountBox").classList.toggle("hidden", !yes);
+ });
+});
+
+function setupPreview(inputId, previewId){
+ const input = document.getElementById(inputId);
+ const preview = document.getElementById(previewId);
+
+ input.addEventListener("change",()=>{
+  preview.innerHTML = "";
+  Array.from(input.files || []).forEach(file=>{
+   if(!file.type.startsWith("image/")) return;
+   const img = document.createElement("img");
+   img.alt = file.name;
+   img.src = URL.createObjectURL(file);
+   preview.appendChild(img);
+  });
+ });
+}
+
+setupPreview("swatchFiles","swatchPreview");
+setupPreview("mailFiles","mailPreview");
+setupPreview("whatsappFiles","whatsappPreview");
+
+function makeId(){
+ if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+ return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{
+  const r=Math.random()*16|0;
+  return (c==="x"?r:(r&3|8)).toString(16);
+ });
+}
+
+function safeFileName(name){
+ return name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-100) || "image.jpg";
+}
+
+async function uploadEvidence(reportId, source, files){
+ const uploadedPaths = [];
+ const evidenceRows = [];
+
+ for(const file of Array.from(files || [])){
+  if(!file.type.startsWith("image/")){
+   throw new Error("শুধু image file আপলোড করুন: " + file.name);
+  }
+
+  const path =
+   currentUser.id + "/" +
+   reportId + "/" +
+   source + "/" +
+   makeId() + "_" +
+   safeFileName(file.name);
+
+  const {error:uploadError} = await db.storage
+   .from(BUCKET)
+   .upload(path,file,{
+    contentType:file.type,
+    upsert:false
+   });
+
+  if(uploadError) throw uploadError;
+
+  uploadedPaths.push(path);
+
+  evidenceRows.push({
+   report_id: reportId,
+   source: source,
+   storage_path: path,
+   file_name: file.name,
+   created_by: currentUser.id
+  });
+ }
+
+ if(evidenceRows.length){
+  const {error:metaError} = await db
+   .from("shade_report_evidence")
+   .insert(evidenceRows);
+
+  if(metaError) throw metaError;
+ }
+
+ return uploadedPaths;
+}
+
+document.getElementById("reportForm").addEventListener("submit", async function(e){
+ e.preventDefault();
+ hideMessage();
+
+ const saveBtn = document.getElementById("saveBtn");
+ saveBtn.disabled = true;
+ saveBtn.textContent = "Saving... Please wait";
+
+ let reportId = null;
+ let uploadedPaths = [];
+
+ try{
+  if(!currentUser){
+   const ok = await checkLogin();
+   if(!ok) return;
+  }
+
+  const source = document.getElementById("source").value;
+  const updatedBy = document.getElementById("updatedBy").value;
+  const otherName = document.getElementById("otherName").value.trim();
+
+  if(updatedBy === "Others" && !otherName){
+   throw new Error("অনুগ্রহ করে Updated By-এর নাম লিখুন।");
+  }
+
+  let hasColors = false;
+  let pendingCount = 0;
+  let runningCount = 0;
+
+  if(source === "Swatch"){
+   const choice = document.querySelector('input[name="hasColors"]:checked');
+
+   if(!choice){
+    throw new Error("Pending / Running Colors আছে কি না নির্বাচন করুন।");
+   }
+
+   hasColors = choice.value === "yes";
+
+   if(hasColors){
+    pendingCount = Number(document.getElementById("pendingCount").value || 0);
+    runningCount = Number(document.getElementById("runningCount").value || 0);
+
+    if(pendingCount < 0 || runningCount < 0){
+     throw new Error("Color count শূন্যের কম হতে পারবে না।");
+    }
+   }
+  }
+
+  const payload = {
+   customer_name: document.getElementById("customer").value.trim(),
+   update_datetime: new Date(document.getElementById("updateTime").value).toISOString(),
+   pi_no: document.getElementById("piNo").value.trim(),
+   updated_by: updatedBy,
+   updated_by_other: updatedBy === "Others" ? otherName : null,
+   update_source: source,
+   swatch_received_datetime: source === "Swatch"
+    ? new Date(document.getElementById("receivedTime").value).toISOString()
+    : null,
+   has_pending_running_colors: source === "Swatch" ? hasColors : false,
+   pending_color_count: source === "Swatch" && hasColors ? pendingCount : 0,
+   running_color_count: source === "Swatch" && hasColors ? runningCount : 0,
+   notes: document.getElementById("notes").value.trim() || null,
+   created_by: currentUser.id
+  };
+
+  const {data:report,error:reportError} = await db
+   .from("shade_reports")
+   .insert(payload)
+   .select("id,report_no")
+   .single();
+
+  if(reportError) throw reportError;
+
+  reportId = report.id;
+
+  let files = [];
+
+  if(source === "Swatch"){
+   files = document.getElementById("swatchFiles").files;
+  }else if(source === "Mail"){
+   files = document.getElementById("mailFiles").files;
+  }else if(source === "WhatsApp"){
+   files = document.getElementById("whatsappFiles").files;
+  }
+
+  uploadedPaths = await uploadEvidence(reportId,source,files);
+
+  showMessage(
+   "✅ Report সফলভাবে Save হয়েছে!\nReport No: " + report.report_no +
+   "\nUploaded Photos: " + uploadedPaths.length,
+   "success"
+  );
+
+  this.reset();
+  document.getElementById("updateTime").value = localDateTime();
+  document.getElementById("otherBox").classList.add("hidden");
+  document.getElementById("swatchBox").classList.add("hidden");
+  document.getElementById("colorCountBox").classList.add("hidden");
+
+  ["swatchPhotos","mailPhotos","whatsappPhotos"].forEach(id=>{
+   document.getElementById(id).classList.add("hidden");
+  });
+
+  ["swatchPreview","mailPreview","whatsappPreview"].forEach(id=>{
+   document.getElementById(id).innerHTML = "";
+  });
+
+ }catch(err){
+  console.error(err);
+
+  // Best-effort cleanup if evidence upload or metadata save fails.
+  if(reportId){
+   if(uploadedPaths.length){
+    await db.storage.from(BUCKET).remove(uploadedPaths);
+   }
+
+   await db.from("shade_reports").delete().eq("id",reportId);
+  }
+
+  showMessage(
+   "❌ Save করা যায়নি।\n" +
+   (err.message || "Unknown error") +
+   "\n\nসমস্যা থাকলে এই Error message আমাকে পাঠান।",
+   "error"
+  );
+
+ }finally{
+  saveBtn.disabled = false;
+  saveBtn.textContent = "💾 Save Report";
+ }
+});
+
+checkLogin();
+</script>
+
+</body>
+</html>

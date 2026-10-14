@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Report Details | CHORKA TEXTILE LTD.</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root {
+    --primary: #0f766e;
+    --dark: #134e4a;
+    --light: #f0fdfa;
+    --bg: #f3f7f7;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #dbe5e5;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont,
+        "Noto Sans Bengali", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+button, a {
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.top-header {
+    color: white;
+    background: linear-gradient(135deg, #134e4a, #0f766e);
+    padding: 24px 16px 28px;
+    border-radius: 0 0 24px 24px;
+}
+
+.header-inner {
+    max-width: 900px;
+    margin: auto;
+}
+
+.brand {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.subtitle {
+    font-size: 12px;
+    opacity: .85;
+    margin-top: 6px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 7px 11px;
+    margin-top: 14px;
+    border-radius: 20px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    font-size: 11px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 16px;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 16px;
+}
+
+.btn {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btn-primary {
+    color: white;
+    background: var(--primary);
+}
+
+.btn-secondary {
+    color: #334155;
+    background: #e2e8f0;
+}
+
+.btn:disabled {
+    opacity: .6;
+}
+
+.panel {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(15,23,42,.035);
+}
+
+.report-heading {
+    font-size: 20px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.report-subheading {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 7px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.section-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--dark);
+    padding-bottom: 11px;
+    margin-bottom: 13px;
+    border-bottom: 1px solid var(--border);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+}
+
+.info-item {
+    min-width: 0;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.info-label {
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.info-value {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+}
+
+.remarks {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+    font-size: 13px;
+    background: var(--light);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.evidence-card {
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.evidence-card a {
+    display: block;
+}
+
+.evidence-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.evidence-caption {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 8px;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+}
+
+.message {
+    padding: 22px 15px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.error {
+    color: #b91c1c;
+    border-color: #fecaca;
+    background: #fff7f7;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 12px 0 25px;
+}
+
+@media (min-width: 650px) {
+    .info-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .evidence-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 380px) {
+    .container {
+        padding: 11px;
+    }
+
+    .brand {
+        font-size: 19px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .evidence-card img {
+        height: 135px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="top-header">
+    <div class="header-inner">
+        <div class="brand">CHORKA TEXTILE LTD.</div>
+
+        <div class="subtitle">
+            Laboratory Management System
+        </div>
+
+        <div class="badge">
+            SHADE UPDATE · REPORT DETAILS
+        </div>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="toolbar">
+        <a href="./history.html" class="btn btn-secondary">
+            ← Back to History
+        </a>
+
+        <button id="refreshBtn" class="btn btn-secondary">
+            ↻ Refresh
+        </button>
+
+        <button id="pdfBtn" class="btn btn-primary" disabled>
+            ⬇ Download PDF
+        </button>
+    </div>
+
+    <div id="statusBox" class="message">
+        রিপোর্ট লোড হচ্ছে...
+    </div>
+
+    <div id="reportArea" class="hidden">
+
+        <section class="panel">
+            <div class="report-heading" id="customerHeading">
+                Report Details
+            </div>
+
+            <div class="report-subheading" id="reportSubheading"></div>
+        </section>
+
+        <section class="panel">
+            <div class="section-title">
+                REPORT INFORMATION
+            </div>
+
+            <div class="info-grid" id="reportInfo"></div>
+        </section>
+
+        <section class="panel">
+            <div class="section-title">
+                SHADE & PRODUCTION STATUS
+            </div>
+
+            <div class="info-grid" id="statusInfo"></div>
+        </section>
+
+        <section class="panel">
+            <div class="section-title">
+                REMARKS / UPDATE NOTES
+            </div>
+
+            <div class="remarks" id="remarksBox"></div>
+        </section>
+
+        <section class="panel">
+            <div class="section-title">
+                SWATCH & EVIDENCE PHOTOS
+            </div>
+
+            <div id="evidenceArea" class="evidence-grid"></div>
+        </section>
+
+    </div>
+
+    <div class="footer">
+        CHORKA TEXTILE LTD. · Laboratory Management System
+    </div>
+
+</main>
+
+<script>
+"use strict";
+
+/* =====================================
+   SUPABASE CONFIGURATION
+===================================== */
+
+const SUPABASE_URL =
+    "https://qvexepszsqrjgjvobuju.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_6VkM2ZGMwx9vpyLPX33llg_GC7elJ7f";
+
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+const REPORT_TABLE = "shade_reports";
+const EVIDENCE_TABLE = "shade_report_evidence";
+const STORAGE_BUCKET = "shade-evidence";
+
+const $ = id => document.getElementById(id);
+
+let currentReport = null;
+let currentEvidence = [];
+
+/* =====================================
+   HELPERS
+===================================== */
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function safeText(value, fallback = "—") {
+    if (value === null || value === undefined) {
+        return fallback;
+    }
+
+    const text = String(value).trim();
+
+    return text === "" ? fallback : text;
+}
+
+function formatDateTime(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return safeText(value);
+    }
+
+    return new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+    }).format(date);
+}
+
+function getCustomer(report) {
+    return report.customer_name ||
+           report.customer ||
+           "";
+}
+
+function getPI(report) {
+    return report.pi_no ||
+           report.pi ||
+           report.po_no ||
+           report.po ||
+           "";
+}
+
+function getShade(report) {
+    return report.shade ||
+           report.shade_name ||
+           report.color ||
+           report.colour ||
+           "";
+}
+
+function getUpdatedBy(report) {
+    return report.updated_by_other ||
+           report.updated_by ||
+           "";
+}
+
+function getSource(report) {
+    return report.update_source ||
+           report.source ||
+           "";
+}
+
+function getRemarks(report) {
+    return report.notes ||
+           report.remarks ||
+           "";
+}
+
+function getReportDate(report) {
+    return report.update_datetime ||
+           report.created_at ||
+           "";
+}
+
+function showStatus(message, isError = false) {
+    const box = $("statusBox");
+
+    box.classList.remove("hidden");
+    box.classList.toggle("error", isError);
+    box.textContent = message;
+}
+
+function fieldHTML(label, value) {
+    return `
+        <div class="info-item">
+            <div class="info-label">${escapeHTML(label)}</div>
+            <div class="info-value">${escapeHTML(safeText(value))}</div>
+        </div>
+    `;
+}
+
+/* =====================================
+   LOAD REPORT
+===================================== */
+
+async function loadReport() {
+    $("reportArea").classList.add("hidden");
+    $("pdfBtn").disabled = true;
+
+    showStatus("রিপোর্ট লোড হচ্ছে...");
+
+    try {
+        /* Authentication check */
+
+        const { data: sessionData, error: sessionError } =
+            await db.auth.getSession();
+
+        if (sessionError) {
+            throw new Error(
+                "Login যাচাই করা যায়নি: " + sessionError.message
+            );
+        }
+
+        if (!sessionData.session) {
+            window.location.replace("./index.html");
+            return;
+        }
+
+        /* Read report ID from URL */
+
+        const params = new URLSearchParams(window.location.search);
+        const reportId = params.get("id");
+
+        if (!reportId) {
+            throw new Error(
+                "URL-এ Report ID পাওয়া যায়নি। History থেকে View Details চাপুন।"
+            );
+        }
+
+        /* Fetch report */
+
+        const { data: report, error: reportError } = await db
+            .from(REPORT_TABLE)
+            .select("*")
+            .eq("id", reportId)
+            .single();
+
+        if (reportError) {
+            throw new Error(
+                "রিপোর্ট পাওয়া যায়নি: " + reportError.message
+            );
+        }
+
+        if (!report) {
+            throw new Error("এই ID-এর কোনো রিপোর্ট পাওয়া যায়নি।");
+        }
+
+        currentReport = report;
+
+        renderReport(report);
+
+        /* Fetch evidence separately */
+
+        await loadEvidence(report.id);
+
+        $("reportArea").classList.remove("hidden");
+        $("statusBox").classList.add("hidden");
+        $("pdfBtn").disabled = false;
+
+    } catch (error) {
+        console.error("Details page error:", error);
+
+        $("reportArea").classList.add("hidden");
+
+        showStatus(
+            "রিপোর্ট লোড করা যায়নি।\n\n" +
+            "Details: " +
+            (error.message || "Unknown error"),
+            true
+        );
+    }
+}
+
+/* =====================================
+   DISPLAY REPORT
+===================================== */
+
+function renderReport(report) {
+    const customer = safeText(
+        getCustomer(report),
+        "Customer Not Specified"
+    );
+
+    $("customerHeading").textContent = customer;
+
+    $("reportSubheading").textContent =
+        "Report No: " +
+        safeText(report.report_no || report.id) +
+        " | PI No: " +
+        safeText(getPI(report)) +
+        " | Updated: " +
+        formatDateTime(getReportDate(report));
+
+    $("reportInfo").innerHTML = [
+        fieldHTML("Report ID", report.id),
+        fieldHTML("Report No.", report.report_no),
+        fieldHTML("Customer", getCustomer(report)),
+        fieldHTML("PI No.", getPI(report)),
+        fieldHTML("Shade / Color", getShade(report)),
+        fieldHTML("Updated By", getUpdatedBy(report)),
+        fieldHTML("Update Source", getSource(report)),
+        fieldHTML(
+            "Update Date & Time",
+            formatDateTime(getReportDate(report))
+        ),
+        fieldHTML(
+            "Swatch Received",
+            formatDateTime(report.swatch_received_datetime)
+        )
+    ].join("");
+
+    $("statusInfo").innerHTML = [
+        fieldHTML("Pending Colors", report.pending_color_count),
+        fieldHTML("Running Colors", report.running_color_count),
+        fieldHTML("Shade / Color", getShade(report))
+    ].join("");
+
+    $("remarksBox").textContent =
+        safeText(getRemarks(report), "No remarks provided.");
+}
+
+/* =====================================
+   LOAD EVIDENCE PHOTOS
+===================================== */
+
+async function loadEvidence(reportId) {
+    const area = $("evidenceArea");
+
+    area.innerHTML =
+        '<div class="message">Evidence ছবি লোড হচ্ছে...</div>';
+
+    currentEvidence = [];
+
+    const { data, error } = await db
+        .from(EVIDENCE_TABLE)
+        .select("*")
+        .eq("report_id", reportId)
+        .order("created_at", { ascending: true });
+
+    if (error) {
+        console.error("Evidence query error:", error);
+
+        area.innerHTML =
+            '<div class="message">রিপোর্টের তথ্য পাওয়া গেছে, কিন্তু Evidence ছবি লোড করা যায়নি: ' +
+            escapeHTML(error.message) +
+            '</div>';
+
+        return;
+    }
+
+    const items = data || [];
+
+    for (const item of items) {
+        let imageURL = "";
+
+        const storagePath =
+            item.storage_path ||
+            item.file_path ||
+            item.path ||
+            "";
+
+        if (storagePath) {
+            const { data: signedData, error: signedError } =
+                await db.storage
+                    .from(STORAGE_BUCKET)
+                    .createSignedUrl(storagePath, 3600);
+
+            if (!signedError && signedData) {
+                imageURL = signedData.signedUrl;
+            } else {
+                console.error("Image URL error:", signedError);
+            }
+        }
+
+        currentEvidence.push({
+            ...item,
+            imageURL
+        });
+    }
+
+    renderEvidence();
+}
+
+function renderEvidence() {
+    const area = $("evidenceArea");
+
+    if (!currentEvidence.length) {
+        area.innerHTML =
+            '<div class="message">এই রিপোর্টে কোনো Evidence ছবি সংযুক্ত নেই।</div>';
+        return;
+    }
+
+    area.innerHTML = currentEvidence.map((item, index) => `
+        <div class="evidence-card">
+
+            ${
+                item.imageURL
+                ? `<a href="${escapeHTML(item.imageURL)}"
+                      target="_blank"
+                      rel="noopener">
+                    <img
+                        src="${escapeHTML(item.imageURL)}"
+                        alt="Evidence ${index + 1}"
+                        loading="lazy">
+                   </a>`
+                : '<div class="message">ছবি খোলা যায়নি</div>'
+            }
+
+            <div class="evidence-caption">
+                ${escapeHTML(safeText(item.source, "Evidence Photo"))}
+                <br>
+                ${escapeHTML(safeText(item.file_name, ""))}
+                <br>
+                ${escapeHTML(formatDateTime(item.created_at))}
+            </div>
+
+        </div>
+    `).join("");
+}
+
+/* =====================================
+   PDF DOWNLOAD
+===================================== */
+
+async function downloadPDF() {
+    if (!currentReport) {
+        alert("কোনো রিপোর্ট লোড করা নেই।");
+        return;
+    }
+
+    if (!window.html2canvas || !window.jspdf) {
+        alert("PDF library লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।");
+        return;
+    }
+
+    const button = $("pdfBtn");
+
+    button.disabled = true;
+    button.textContent = "PDF তৈরি হচ্ছে...";
+
+    let workspace = null;
+
+    try {
+        workspace = document.createElement("div");
+
+        workspace.style.position = "fixed";
+        workspace.style.left = "-20000px";
+        workspace.style.top = "0";
+        workspace.style.width = "794px";
+        workspace.style.background = "#ffffff";
+
+        workspace.innerHTML = `
+            <div style="
+                width:794px;
+                min-height:1123px;
+                padding:45px;
+                background:#ffffff;
+                color:#1e293b;
+                font-family:Arial,sans-serif;
+            ">
+                <div style="
+                    border-bottom:3px solid #0f766e;
+                    padding-bottom:18px;
+                    margin-bottom:25px;
+                ">
+                    <div style="
+                        font-size:26px;
+                        font-weight:800;
+                        color:#134e4a;
+                    ">CHORKA TEXTILE LTD.</div>
+
+                    <div style="
+                        font-size:12px;
+                        color:#64748b;
+                        margin-top:6px;
+                    ">Laboratory Management System</div>
+
+                    <div style="
+                        font-size:20px;
+                        font-weight:800;
+                        color:#0f766e;
+                        margin-top:22px;
+                    ">SHADE UPDATE REPORT</div>
+                </div>
+
+                <div id="pdfFields" style="
+                    display:grid;
+                    grid-template-columns:1fr 1fr;
+                    gap:10px;
+                "></div>
+
+                <div style="
+                    margin-top:20px;
+                    border:1px solid #dbe5e5;
+                    border-radius:8px;
+                    overflow:hidden;
+                ">
+                    <div style="
+                        padding:12px;
+                        background:#eaf7f5;
+                        font-weight:800;
+                        color:#134e4a;
+                    ">REMARKS</div>
+
+                    <div id="pdfRemarks" style="
+                        padding:15px;
+                        font-size:13px;
+                        line-height:1.7;
+                        white-space:pre-wrap;
+                        overflow-wrap:anywhere;
+                    "></div>
+                </div>
+
+                <div id="pdfImages" style="
+                    display:grid;
+                    grid-template-columns:1fr 1fr;
+                    gap:12px;
+                    margin-top:20px;
+                "></div>
+            </div>
+        `;
+
+        document.body.appendChild(workspace);
+
+        const fields = [
+            ["Report ID", currentReport.id],
+            ["Report No.", currentReport.report_no],
+            ["Customer", getCustomer(currentReport)],
+            ["PI No.", getPI(currentReport)],
+            ["Shade / Color", getShade(currentReport)],
+            ["Updated By", getUpdatedBy(currentReport)],
+            ["Update Source", getSource(currentReport)],
+            ["Update Date", formatDateTime(getReportDate(currentReport))],
+            ["Swatch Received", formatDateTime(currentReport.swatch_received_datetime)],
+            ["Pending Colors", currentReport.pending_color_count],
+            ["Running Colors", currentReport.running_color_count]
+        ];
+
+        $("pdfFields").innerHTML = fields.map(([label, value]) => `
+            <div style="
+                padding:12px;
+                border:1px solid #dbe5e5;
+                border-radius:7px;
+                min-height:65px;
+                overflow-wrap:anywhere;
+            ">
+                <div style="
+                    color:#64748b;
+                    font-size:11px;
+                    margin-bottom:7px;
+                ">${escapeHTML(label)}</div>
+
+                <div style="
+                    font-size:13px;
+                    font-weight:700;
+                    line-height:1.5;
+                ">${escapeHTML(safeText(value))}</div>
+            </div>
+        `).join("");
+
+        $("pdfRemarks").textContent =
+            safeText(getRemarks(currentReport), "No remarks provided.");
+
+        const imageArea = $("pdfImages");
+
+        for (const item of currentEvidence) {
+            if (!item.imageURL) continue;
+
+            const card = document.createElement("div");
+
+            card.style.cssText =
+                "border:1px solid #dbe5e5;padding:8px;border-radius:7px;";
+
+            const img = document.createElement("img");
+
+            img.src = item.imageURL;
+            img.alt = "Evidence";
+            img.style.cssText =
+                "width:100%;height:220px;object-fit:contain;";
+
+            const caption = document.createElement("div");
+
+            caption.style.cssText =
+                "font-size:10px;margin-top:6px;overflow-wrap:anywhere;";
+
+            caption.textContent =
+                item.file_name || item.source || "Evidence Photo";
+
+            card.appendChild(img);
+            card.appendChild(caption);
+
+            imageArea.appendChild(card);
+        }
+
+        await Promise.all(
+            Array.from(workspace.querySelectorAll("img")).map(img => {
+                if (img.complete && img.naturalWidth > 0) {
+                    return Promise.resolve();
+                }
+
+                return new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                    setTimeout(resolve, 5000);
+                });
+            })
+        );
+
+        const canvas = await html2canvas(workspace.firstElementChild, {
+            scale: 1.5,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            logging: false,
+            width: 794,
+            windowWidth: 794
+        });
+
+        const { jsPDF } = window.jspdf;
+
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4",
+            compress: true
+        });
+
+        const imageData = canvas.toDataURL("image/jpeg", 0.9);
+
+        const pageWidth = 210;
+        const pageHeight = 297;
+
+        const imageHeight =
+            canvas.height * pageWidth / canvas.width;
+
+        let heightLeft = imageHeight;
+        let position = 0;
+
+        pdf.addImage(
+            imageData,
+            "JPEG",
+            0,
+            position,
+            pageWidth,
+            imageHeight,
+            undefined,
+            "FAST"
+        );
+
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+            position = heightLeft - imageHeight;
+
+            pdf.addPage();
+
+            pdf.addImage(
+                imageData,
+                "JPEG",
+                0,
+                position,
+                pageWidth,
+                imageHeight,
+                undefined,
+                "FAST"
+            );
+
+            heightLeft -= pageHeight;
+        }
+
+        const safeCustomer = String(getCustomer(currentReport) || "Customer")
+            .replace(/[\\/:*?"<>|]/g, "_");
+
+        const safePI = String(getPI(currentReport) || "Report")
+            .replace(/[\\/:*?"<>|]/g, "_");
+
+        pdf.save(`Shade_Report_${safeCustomer}_${safePI}.pdf`);
+
+    } catch (error) {
+        console.error("PDF download error:", error);
+
+        alert(
+            "PDF তৈরি করতে সমস্যা হয়েছে:\n" +
+            (error.message || "Unknown error")
+        );
+
+    } finally {
+        if (workspace && workspace.parentNode) {
+            workspace.parentNode.removeChild(workspace);
+        }
+
+        button.disabled = false;
+        button.textContent = "⬇ Download PDF";
+    }
+}
+
+/* =====================================
+   EVENTS & STARTUP
+===================================== */
+
+$("refreshBtn").addEventListener("click", loadReport);
+
+$("pdfBtn").addEventListener("click", downloadPDF);
+
+(async function init() {
+    await loadReport();
+})();
+</script>
+
+</body>
+</html>
