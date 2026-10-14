@@ -1,28 +1,37 @@
 {
-"id": "./",
-"name": "CHORKA TEXTILE LTD. Shade Update Report System",
-"short_name": "CHORKA LAB",
-"description": "Yarn Dyeing Laboratory Shade Update and Report Management System",
-"lang": "bn",
-"start_url": "./index.html",
-"scope": "./",
-"display": "standalone",
-"orientation": "portrait",
-"theme_color": "#092b3b",
-"background_color": "#092b3b",
-"icons": [
-{
-"src": "./icons/icon-192.png",
-"sizes": "192x192",
-"type": "image/png",
-"purpose": "any"
-},
-{
-"src": "./icons/icon-512.png",
-"sizes": "512x512",
-"type": "image/png",
-"purpose": "any"
-}
-],
-"screenshots": []
+  "id": "./",
+  "name": "CHORKA TEXTILE LTD. Shade Update Report System",
+  "short_name": "CHORKA LAB",
+  "description": "Yarn Dyeing Laboratory Shade Update and Report Management System",
+  "lang": "bn",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "theme_color": "#092b3b",
+  "background_color": "#092b3b",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
